@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../../services/users/user-service";
+import CustomError from "../../utils/error";
 
 async function register(req: Request, res: Response, next: NextFunction) {
     const {
@@ -7,6 +8,8 @@ async function register(req: Request, res: Response, next: NextFunction) {
         last_name,
         email_address,
         password,
+        phone,
+        status
     } = req.body
 
     const userService = new UserService()
@@ -14,12 +17,12 @@ async function register(req: Request, res: Response, next: NextFunction) {
     try {
 
         console.log("Request from ip: ", req.ip);
-        
+
         // get user with existing email address
         const existingUserAccount = await userService.getUser({ email_address })
 
         if (existingUserAccount) {
-            throw new Error("Email is already in use");
+            throw new CustomError("Email is already in use", 400);
         }
 
         const createdUserAccount = await userService.createUser({
@@ -27,6 +30,8 @@ async function register(req: Request, res: Response, next: NextFunction) {
             last_name,
             email_address,
             password,
+            phone,
+            status
         })
 
         return res.json({

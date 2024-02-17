@@ -1,27 +1,28 @@
-import User from "../../models/user";
+import model  from "../../models";
 import { UserInterface, UserStatus } from "../../types/user";
 
-class UserRepository{
-    constructor(){}
+class UserRepository {
+    constructor() { }
 
-    async getUser(query: Record<string, any>){
-        return await User.findOne(query)
+    async getUser(query: Record<string, any>) {
+        return await model.User.findOne({ where: query })
     }
 
-    async deleteUser(query: Record<string, any>){
-        return (await User.findOne(query)).destroy()
+    async deleteUser(query: Record<string, any>) {
+        return (await model.User.findOne({ where: query })).destroy()
     }
 
-    async softDeleteUser(query: Record<string, any>){
-        return (await User.findOne(query)).update({status: UserStatus.DELETED})
+    async softDeleteUser(query: Record<string, any>) {
+        return (await model.User.findOne({ where: query })).update({ status: UserStatus.DELETED })
     }
 
-    async getUsers(){
-        return await User.findAll()
+    async getUsers() {
+        return await model.User.findAll()
     }
 
-    async createUser(user: UserInterface){
-        return await User.create({...user})
+    async createUser(user: UserInterface) {
+        const createdUser =  await model.User.create({...user})
+        return createdUser
     }
 }
 
