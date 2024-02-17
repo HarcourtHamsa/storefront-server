@@ -2,6 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import UserService from "../../services/users/user-service";
 import CustomError from "../../utils/error";
 import CryptoService from "../../services/cyrpto/crypto-service";
+import { Session } from "express-session";
+
+interface CustomSession extends Session {
+    userId;
+}
 
 async function login(req: Request, res: Response, next: NextFunction) {
     const {
@@ -11,6 +16,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
 
     const userService = new UserService()
     const cryptoService = new CryptoService()
+
 
     try {
 
@@ -30,6 +36,16 @@ async function login(req: Request, res: Response, next: NextFunction) {
         if (!isPasswordCorrect) {
             throw new CustomError("Invalid credentials", 400);
         }
+
+        (req.session as CustomSession).userId = existingUserAccount.id
+
+        req.session.save((error) => {
+            if (error) {
+                console.log("Error saving session: ", error)
+            } else {
+                console.log("Session saved")
+            }
+        })
 
         return res.json({
             message: "Login successful",

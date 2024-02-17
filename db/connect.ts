@@ -1,12 +1,35 @@
 import { Sequelize } from "sequelize"
 
-const sequelize = new Sequelize({
-    dialect: 'mysql',
-    host: 'localhost',
-    username: 'root',
-    password: 'root',
-    database: 'storefront'
-})
+const env = process.env.NODE_ENV || 'development'
+
+export const config = {
+    development: {
+        username: "root",
+        user: "root",
+        password: "root",
+        database: "storefront_test",
+        host: "127.0.0.1",
+        dialect: "mysql"
+    },
+    test: {
+        username: "root",
+        user: "root",
+        password: "root",
+        database: "storefront_test",
+        host: "127.0.0.1",
+        dialect: "mysql"
+    },
+    production: {
+        username: "root",
+        user: "root",
+        password: "root",
+        database: "storefront",
+        host: "127.0.0.1",
+        dialect: "mysql"
+    }
+}
+
+const sequelize = new Sequelize(config[env])
 
 
 sequelize.authenticate().then(() => {
