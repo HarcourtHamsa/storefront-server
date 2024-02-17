@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import UserService from "../../services/users/user-service";
 import CustomError from "../../utils/error";
+import CryptoService from "../../services/cyrpto/crypto-service";
 
 async function register(req: Request, res: Response, next: NextFunction) {
     const {
@@ -13,6 +14,7 @@ async function register(req: Request, res: Response, next: NextFunction) {
     } = req.body
 
     const userService = new UserService()
+    const cryptoService = new CryptoService()
 
     try {
 
@@ -25,11 +27,13 @@ async function register(req: Request, res: Response, next: NextFunction) {
             throw new CustomError("Email is already in use", 400);
         }
 
+        const hashedPassword = await cryptoService.hashPassword(password)
+
         const createdUserAccount = await userService.createUser({
             first_name,
             last_name,
             email_address,
-            password,
+            password: hashedPassword,
             phone,
             status
         })

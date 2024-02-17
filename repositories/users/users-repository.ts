@@ -5,7 +5,7 @@ class UserRepository {
     constructor() { }
 
     async getUser(query: Record<string, any>) {
-        return await model.User.findOne({ where: query })
+        return await model.User.findOne({ where: query }, { raw: true })
     }
 
     async deleteUser(query: Record<string, any>) {
