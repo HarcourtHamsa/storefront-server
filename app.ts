@@ -5,6 +5,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import router from './routes'
 import session from 'express-session'
+import cors from "cors"
 
 const MySQLStore = require('express-mysql-session')(session);
 
@@ -19,18 +20,28 @@ const PORT = env === 'staging' ? 8001 : 8000
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: sessionStore,
-  cookie: {
-    sameSite: 'strict',
-    httpOnly: true,
-    secure: env !== 'production' ? false : true,
-    maxAge: 1000 * 60 * 1
-  }
-}))
+
+const whiteList = ["http://localhost:3000", "https://staging-app.bizpend.com"]
+
+app.use(
+  cors({
+    origin: whiteList,
+    credentials: true,
+    exposedHeaders: ['Set-Cookie'],
+  }))
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      sameSite: 'none',
+      secure: false,
+      maxAge: 12 * 60 * 60 * 1000,
+    }
+  }))
 
 sessionStore.onReady().then(() => {
   console.log('Session store is ready')

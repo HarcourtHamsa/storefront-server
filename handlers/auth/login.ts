@@ -47,7 +47,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
             }
         })
 
-        return res.json({
+        return res.send({
             message: "Login successful",
             data: existingUserAccount
         })
